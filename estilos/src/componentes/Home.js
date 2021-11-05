@@ -1,9 +1,13 @@
 import React,{useState} from "react";
 import {View,Image,Text,StyleSheet,TextInput,TouchableOpacity,Alert} from 'react-native';
 import { useNavigation } from "@react-navigation/native";
+import SQLiteDB from "./DB/SQLiteDB";
+
 const Home= (props) => {
     const navigation=useNavigation();
     
+    SQLiteDB.openDB
+    SQLiteDB.criaTabela()
 
     return (
         //é o que vai ser redenrizado

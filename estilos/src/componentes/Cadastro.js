@@ -9,9 +9,13 @@ import {
   Alert,
   Button,
 } from 'react-native';
+import SQLiteDB from "./DB/SQLiteDB";
 import {useNavigation} from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
+import { FlatList } from 'react-native-gesture-handler';
 const Cadastro = ({navigation: {goBack}}) => {
+
+  SQLiteDB.criaTabela()
   //printar route
   //console.log(route)
 
@@ -22,6 +26,47 @@ const Cadastro = ({navigation: {goBack}}) => {
   const [nome, setNome] = useState(null);
   const [dataNascimento, setDataNascimento] = useState(new Date());
   const [open, setOpen] = useState(false); //abre e fecha o modal data..default fechado
+  const [alunos, setAlunos] = useState([]);
+
+
+
+ //insere
+const insereAluno = (codigo, nome, dataNascimento) => {
+  console.log(codigo, nome, dataNascimento);
+  SQLiteDB.db.transaction(tx => {
+    tx.executeSql(
+      'INSERT INTO CADALUNO (codigo,nome, dataNascimento) values (?,?,?)',
+      [codigo, nome, dataNascimento.toDateString()],
+      (tx, results) => {
+        console.log('Results', results.rowsAffected);
+        if (results.rowsAffected > 0) {
+          Alert.alert('Data Inserted Successfully....');
+        } else Alert.alert('Failed....');
+      },
+    );
+  });
+};
+
+//busca alunos
+const buscaAlunos = () => {
+  SQLiteDB.db.transaction(tx => {
+    tx.executeSql(
+      'SELECT codigo,nome,dataNascimento from CADALUNO order by nome',
+      [],
+      (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i)
+          temp.push(results.rows.item(i));
+        console.log(temp);
+        setAlunos(temp)
+      },
+    );
+  });
+};
+
+
+
+
 
   return (
     //é o que vai ser redenrizado
@@ -67,7 +112,9 @@ const Cadastro = ({navigation: {goBack}}) => {
 
       <TouchableOpacity
         // https://reactnative.dev/docs/alert
-        onPress={() =>
+        onPress={() => {
+         insereAluno(codigo,nome,dataNascimento)
+         buscaAlunos();
           Alert.alert(
             'Cadastro realizado',
             `Código:${codigo} Nome: ${nome} Data Nascimento: ${dataNascimento}}`,
@@ -78,15 +125,22 @@ const Cadastro = ({navigation: {goBack}}) => {
               },
             ],
           )
+        }
         }>
         <Text>Cadastrar</Text>
       </TouchableOpacity>
+     
     </View>
   );
 };
 
-//definir os estilos aqui
+
+
 const styles = StyleSheet.create({
   
 });
+
+
+
+
 export default Cadastro;
