@@ -1,70 +1,67 @@
+// Créditos para https://myselfdev.medium.com/como-usar-a-geolocaliza%C3%A7%C3%A3o-no-react-native-979bc922cd77
+
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, Text, PermissionsAndroid,Platform } from 'react-native';
 
 import Geolocation from 'react-native-geolocation-service';
+import { TextInput } from 'react-native-gesture-handler';
+
 
 
 
 const GPS=()=> {
-  const [hasLocationPermission, setHasLocationPermission] = useState(false);
-  const [userPosition, setUserPosition] = useState(false);
+  
+  
 
-  async function verifyLocationPermission() {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  const [location, setLocation] = useState([]);
+
+  async function requestPermissions() {
+    // if (Platform.OS === 'ios') {
+    //   Geolocation.requestAuthorization();
+    //   Geolocation.setRNConfiguration({
+    //     skipPermissionRequests: false,
+    //    authorizationLevel: 'whenInUse',
+    //  });
+    // }
+  
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('permissão concedida');
-        setHasLocationPermission(true);
-      } else {
-        console.error('permissão negada');
-        setHasLocationPermission(false);
-      }
-    } catch (err) {
-      console.warn(err);
     }
   }
 
   useEffect(() => {
-    verifyLocationPermission();
-
-    if (hasLocationPermission) {
-      Geolocation.getCurrentPosition(
-        position => {
-          setUserPosition({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        error => {
-          console.log(error.code, error.message);
-        }
-      );
-    }
-  }, [hasLocationPermission]);
+    requestPermissions();
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        setLocation({
+          latitude,
+          longitude,
+        });
+        console.log(position)
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>Latitude: {userPosition.latitude}</Text>
-      <Text>Longitude: {userPosition.longitude}</Text>
+    <View>
+      {location ? (
+        <>
+          <TextInput>Latitude: {location.latitude}</TextInput>
+          <TextInput>Latitude: {location.longitude}</TextInput>
+        </>
+      ) : (
+        <TextInput>..Loading</TextInput>
+      )}
     </View>
   );
-}
-
-
-
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'lightgreen',
-    },
-    text: {
-      color: 'orange',
-      fontSize: 40,
-    },
-  });
+};
 
 
   export default GPS;

@@ -1,0 +1,14 @@
+com/armazenamento/ReactNativeFlipper.java
+ com.armazenamento.ReactNativeFlipper
+ com.armazenamento.ReactNativeFlipper$1
+ com.armazenamento.ReactNativeFlipper$2
+ com.armazenamento.ReactNativeFlipper$2$1
+com/armazenamento/MainActivity.java
+ com.armazenamento.MainActivity
+com/armazenamento/BuildConfig.java
+ com.armazenamento.BuildConfig
+com/armazenamento/MainApplication.java
+ com.armazenamento.MainApplication
+ com.armazenamento.MainApplication$1
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList
